@@ -6,8 +6,6 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -30,7 +28,7 @@ public class ClienteFacadeREST extends AbstractFacade<Cliente> {
     @GET
     @Path("getClients")
     @Produces({ MediaType.APPLICATION_JSON})
-    public List<Cliente> findAll() {
+    public List<Cliente> getClients() {
         return super.findAll();
     }
 
