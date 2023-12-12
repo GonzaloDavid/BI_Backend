@@ -34,10 +34,6 @@ public class EmpleadoFacadeREST extends AbstractFacade<Empleado> {
         if (idEmpleado != null && !idEmpleado.isEmpty()) {
             key.setIdEmpleado(idEmpleado.get(0));
         }
-        java.util.List<String> idPersona = map.get("idPersona");
-        if (idPersona != null && !idPersona.isEmpty()) {
-            key.setIdPersona(idPersona.get(0));
-        }
         return key;
     }
 

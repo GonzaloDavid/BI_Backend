@@ -40,7 +40,7 @@ public class Empleado implements Serializable {
         this.cargo = cargo;
     }
 
-    public Empleado(String idEmpleado, String idPersona) {
+    public Empleado(String idEmpleado, Integer idPersona) {
         this.empleadoPK = new EmpleadoPK(idEmpleado, idPersona);
     }
 

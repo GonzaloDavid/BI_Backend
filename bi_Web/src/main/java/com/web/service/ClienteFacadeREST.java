@@ -1,7 +1,13 @@
 package com.web.service;
 
+import com.dao.ClienteDAO;
+import com.dao.EmpleadoDAO;
+import com.dao.MovimientoDAO;
 import com.dao.PersonaDAO;
+import com.dto.ResponseDTO;
 import com.entities.Cliente;
+import com.entities.Empleado;
+import com.entities.Movimientos;
 import com.entities.Persona;
 import java.util.List;
 import javax.ejb.EJB;
@@ -27,6 +33,15 @@ public class ClienteFacadeREST extends AbstractFacade<Cliente> {
     
     @EJB
     private PersonaDAO personaDAO;
+    
+    @EJB
+    private MovimientoDAO movimientoDAO;
+    
+    @EJB
+    private ClienteDAO clienteDAO;
+    
+    @EJB
+    private EmpleadoDAO empleadoDAO;
 
     public ClienteFacadeREST() {
         super(Cliente.class);
@@ -42,23 +57,72 @@ public class ClienteFacadeREST extends AbstractFacade<Cliente> {
     @GET
     @Path("getClientByCode")
     @Produces({MediaType.APPLICATION_JSON})
-    public Persona getClientByCode(
-            @QueryParam("codigoCliente") String codeInstance,
-            @QueryParam("codigoEmpleado") String codeCompany
+    public ResponseDTO getClientByCode(
+            @QueryParam("codigoCliente") String codigoCliente,
+            @QueryParam("codigoEmpleado") String codigoEmpleado
     )  {
         //Validar la longitud del codigo enviado
+        if(codigoCliente!=null)
+        {
+            if(codigoCliente.length() !=9)
+            {
+                new Exception("Codigo de cliente NO tiene la longitud correcta");
+            } 
+        }
+      
+        if(codigoEmpleado!=null)
+        {
+            if(codigoEmpleado.length() !=9)
+            {
+                new Exception("Codigo de empleado NO tiene la longitud correcta");
+            }
+        }
+
+        if(codigoCliente== null && codigoEmpleado==null)
+        {
+            new Exception("Los 2 codigos no pueden ser vacios");
+        }
+        
+        ResponseDTO response=new ResponseDTO();
         
         //Busca si es codigo de cliente en tabla de clientes
-        
-        //Buscara si es codigo de empleado en tabla de empleados
-        
+        Cliente clienteSeleccionado=null;
+        if(codigoCliente!=null)
+        {
+            clienteSeleccionado=clienteDAO.obtenerClientePorCodigo(codigoCliente);
+            
+            Empleado empleado= empleadoDAO.obtenerEmpleadoPorIdPersona(clienteSeleccionado.getIdPersona());
+            if(empleado!=null)
+            {
+                 response.setCargo(empleado.getCargo());
+            }
+        }else{
+            
+            //Buscar si es codigo de empleado en tabla de empleados
+            Empleado empleado= empleadoDAO.obtenerEmpleado(codigoEmpleado);
+            response.setCargo(empleado.getCargo());
+            
+            //Buscar cliente
+            clienteSeleccionado=clienteDAO.obtenerClientePorIdPersona(empleado.getEmpleadoPK().getIdPersona());
+        }
+
         //Con idPerson buscar en tabla de personas 
-        Persona persona= personaDAO.obtenerDatosPersonaPorId(1);
+        Persona persona= personaDAO.obtenerDatosPersonaPorId(clienteSeleccionado.getIdPersona());
+        response.setNombre(persona.getNombre());
+        response.setApellido(persona.getApellido());
+        response.setEdad(persona.getEdad());
+        response.setIdPersona(persona.getIdPersona());
+        response.setNumeroCuenta(clienteSeleccionado.getNumeroCuenta());
+        response.setFechaCreacionCuenta(clienteSeleccionado.getFechaCreacionCuenta());
         
         //Buscar movimientos
+        List<Movimientos> listaMovimientos=movimientoDAO.obtenerMovimientosPorIdCliente(codigoCliente);
+        response.setMovimientos(listaMovimientos);
         
+        //Calcula la suma y resta de movimientos
+        response.setSaldoActual(movimientoDAO.calcularSaldoActual(listaMovimientos));
         
-        return persona;
+        return response;
     }
 
 

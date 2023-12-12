@@ -23,12 +23,12 @@ public class EmpleadoPK implements Serializable {
     @NotNull
     @Size(min = 1, max = 45)
     @Column(name = "idPersona")
-    private String idPersona;
+    private Integer idPersona;
 
     public EmpleadoPK() {
     }
 
-    public EmpleadoPK(String idEmpleado, String idPersona) {
+    public EmpleadoPK(String idEmpleado, Integer idPersona) {
         this.idEmpleado = idEmpleado;
         this.idPersona = idPersona;
     }
@@ -41,13 +41,15 @@ public class EmpleadoPK implements Serializable {
         this.idEmpleado = idEmpleado;
     }
 
-    public String getIdPersona() {
+    public Integer getIdPersona() {
         return idPersona;
     }
 
-    public void setIdPersona(String idPersona) {
+    public void setIdPersona(Integer idPersona) {
         this.idPersona = idPersona;
     }
+
+    
 
     @Override
     public int hashCode() {
