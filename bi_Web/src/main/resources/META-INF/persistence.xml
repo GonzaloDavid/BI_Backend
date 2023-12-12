@@ -6,6 +6,7 @@
     <persistence-unit name="my_persistence_unit">
            <jta-data-source>mysqlResources</jta-data-source>
             <class>com.entities.Cliente</class>
+            <class>com.entities.Persona</class>
         
     </persistence-unit>
     
