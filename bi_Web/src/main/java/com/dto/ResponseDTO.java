@@ -22,6 +22,9 @@ public class ResponseDTO {
     
     private Double saldoActual;
     private String cargo;
+    
+    //Mensajes de Error
+    private String message;
 
     public Integer getIdPersona() {
         return idPersona;
@@ -101,6 +104,14 @@ public class ResponseDTO {
 
     public void setCargo(String cargo) {
         this.cargo = cargo;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
     
     

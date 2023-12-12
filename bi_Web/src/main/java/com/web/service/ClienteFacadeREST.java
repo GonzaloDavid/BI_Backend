@@ -60,13 +60,18 @@ public class ClienteFacadeREST extends AbstractFacade<Cliente> {
     public ResponseDTO getClientByCode(
             @QueryParam("codigoCliente") String codigoCliente,
             @QueryParam("codigoEmpleado") String codigoEmpleado
-    )  {
+    ) throws Exception  {
         //Validar la longitud del codigo enviado
         if(codigoCliente!=null)
         {
             if(codigoCliente.length() !=9)
             {
-                new Exception("Codigo de cliente NO tiene la longitud correcta");
+                 ResponseDTO responseException=new ResponseDTO();
+              
+                 String mensaje="Codigo de cliente NO tiene la longitud correcta";
+                 responseException.setMessage(mensaje);
+                 return responseException;
+                //throw new Exception();
             } 
         }
       
@@ -74,13 +79,22 @@ public class ClienteFacadeREST extends AbstractFacade<Cliente> {
         {
             if(codigoEmpleado.length() !=9)
             {
-                new Exception("Codigo de empleado NO tiene la longitud correcta");
+                ResponseDTO responseException=new ResponseDTO();
+              
+                 String mensaje="Codigo de empleado NO tiene la longitud correcta";
+                 responseException.setMessage(mensaje);
+                 return responseException;
+                //throw new Exception("");
             }
         }
 
         if(codigoCliente== null && codigoEmpleado==null)
         {
-            new Exception("Los 2 codigos no pueden ser vacios");
+             ResponseDTO responseException=new ResponseDTO();
+             String mensaje="Los 2 codigos no pueden ser vacios";
+             responseException.setMessage(mensaje);
+             return responseException;
+            //throw new Exception("Los 2 codigos no pueden ser vacios");
         }
         
         ResponseDTO response=new ResponseDTO();
@@ -91,6 +105,13 @@ public class ClienteFacadeREST extends AbstractFacade<Cliente> {
         {
             clienteSeleccionado=clienteDAO.obtenerClientePorCodigo(codigoCliente);
             
+            if(clienteSeleccionado==null)
+            {
+             ResponseDTO responseException=new ResponseDTO();
+             String mensaje="El cliente con codigo "+codigoCliente+ " no fue encontrado";
+             responseException.setMessage(mensaje);
+             return responseException;
+            }
             Empleado empleado= empleadoDAO.obtenerEmpleadoPorIdPersona(clienteSeleccionado.getIdPersona());
             if(empleado!=null)
             {
@@ -105,6 +126,14 @@ public class ClienteFacadeREST extends AbstractFacade<Cliente> {
             //Buscar cliente
             clienteSeleccionado=clienteDAO.obtenerClientePorIdPersona(empleado.getEmpleadoPK().getIdPersona());
         }
+        
+        if(clienteSeleccionado==null)
+        {
+         ResponseDTO responseException=new ResponseDTO();
+         String mensaje="Cliente NO encontrado";
+         responseException.setMessage(mensaje);
+         return responseException;
+        }
 
         //Con idPerson buscar en tabla de personas 
         Persona persona= personaDAO.obtenerDatosPersonaPorId(clienteSeleccionado.getIdPersona());
@@ -116,7 +145,7 @@ public class ClienteFacadeREST extends AbstractFacade<Cliente> {
         response.setFechaCreacionCuenta(clienteSeleccionado.getFechaCreacionCuenta());
         
         //Buscar movimientos
-        List<Movimientos> listaMovimientos=movimientoDAO.obtenerMovimientosPorIdCliente(codigoCliente);
+        List<Movimientos> listaMovimientos=movimientoDAO.obtenerMovimientosPorIdCliente(clienteSeleccionado.getIdCliente());
         response.setMovimientos(listaMovimientos);
         
         //Calcula la suma y resta de movimientos
